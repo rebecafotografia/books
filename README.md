@@ -51,7 +51,7 @@ Depois, crie um álbum, envie fotos e vídeos e personalize as capas. A publica�
 
 - Fotos, vídeos e favoritos organizados em abas
 - Favoritos armazenados no navegador do cliente
-- Swipe/teclado, lightbox, seleção múltipla e download ZIP
+- Swipe/teclado, lightbox, seleção múltipla e downloads individuais
 - Capa em vídeo e fonte/escala editáveis
 - Barra fixa com Rebeca Fotografia e Instagram
 - Responsivo e com suporte a movimento reduzido
