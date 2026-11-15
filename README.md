@@ -1,29 +1,57 @@
-# Rebeca Fotografia · Books
+# Rebeca Fotografia — Books · GitHub Pages
 
-Galerias privadas de clientes com visual editorial, responsivas para celular e desktop.
+**Site estático: sem Node.js, sem VPS e sem banco de dados.** O repositório guarda as fotos e o GitHub Pages entrega a galeria.
 
-## Rodar
-Requer Node.js 20+. Sem dependências de npm.
+## Ativar pela primeira vez
 
-```bash
-ADMIN_PASSWORD='uma-senha-forte' SESSION_SECRET='chave-aleatoria-longa' node server.js
+No GitHub, abra **Settings → Pages** deste repositório. Em **Build and deployment**, escolha **Deploy from a branch**, branch **main**, pasta **/(root)** e salve.
+
+Endereço esperado (depois que o GitHub Pages estiver habilitado): **https://rebecafotografia.github.io/books/**
+
+A versão atual está em `index.html`. O servidor Node.js anterior (`server.js`, `Dockerfile`) não é necessário para o modo Pages.
+
+## Criar álbuns somente pelo GitHub
+
+Crie uma pasta `albums/nome-do-album/` e adicione suas fotos (JPG, PNG, WEBP etc.). Quando o GitHub Pages terminar de publicar o commit, o catálogo `catalog.json` é gerado automaticamente pelo Jekyll e o álbum passa a ter link:
+
+`https://rebecafotografia.github.io/books/?album=nome-do-album`
+
+Para personalizar título e capa, coloque em `albums/nome-do-album/album.json`:
+
+```json
+{
+  "title": "Mariana & Lucas",
+  "subtitle": "O nosso grande dia",
+  "font": "serif",
+  "scale": 1,
+  "cover": "capa.jpg",
+  "videoCover": ""
+}
 ```
 
-Acesse `http://localhost:3000/admin` para criar o álbum. O cliente abre `http://localhost:3000/a/slug-do-album`.
+Fontes: `serif`, `sans` ou `display`. Para capa em vídeo, informe nome do arquivo na chave `videoCover`.
 
-## Upload e atualização automática
-- Pelo painel `/admin`: crie álbum, faça upload de fotos e vídeos, altere título, fontes e capa.
-- Pelo servidor: crie `data/albums/slug-do-album/` e coloque imagens JPG, JPEG, PNG, WEBP, GIF, AVIF e vídeos MP4, WEBM, MOV. O servidor detecta os novos arquivos a cada requisição e o navegador do cliente atualiza automaticamente em até 15 segundos.
-- Opcional: edite o arquivo `data/meta.json` para alterar título, texto, fonte (serif / sans / display), escala, capa, videoCover, private e password de cada álbum.
-- Para capa: no painel faça upload de capa (imagem ou vídeo), ou use arquivos da mesma pasta e defina `cover` / `videoCover` com o nome do arquivo.
+## Painel de upload pelo celular
 
-## Segurança e implantação
-- Configure `ADMIN_PASSWORD` e `SESSION_SECRET` em variáveis de ambiente **antes de publicar**. O servidor bloqueia o painel sem elas.
-- O repositório é público. **Não commite fotos privadas**: `data/` está ignorada. Faça backup periódico de `data/` em armazenamento privado.
-- Álbuns podem exigir senha; links sozinhos não são garantia de sigilo. As fotos com senha só são servidas após validação.
-- Hospede em uma VPS/serviço Node com disco persistente. GitHub Pages **não executa** o servidor de upload, controle de acesso ou descoberta de pastas.
-- Use HTTPS com proxy reverso (Caddy/Nginx) em produção. Para uploads acima de 100 MB, configure limite no proxy. Limite por arquivo no aplicativo: 250 MB.
-- Downloads múltiplos usam ZIP sem dependências; em grandes álbuns, prefira lotes menores.
+Abra `https://rebecafotografia.github.io/books/?admin=1`.
 
-## Recursos
-Galeria mobile-first, topo fixo Rebeca Fotografia + Instagram, fotos/vídeos/favoritos, lightbox com swipe e teclado, seleção por toque prolongado, selecionar todas, downloads individuais e ZIP, favoritos salvos no navegador, capa em vídeo, transições suaves e suporte a movimento reduzido.
+Para gravar no próprio GitHub, gere um **fine-grained personal access token** em GitHub → Settings → Developer settings → Personal access tokens. Restrinja a **rebecafotografia/books**, com permissão **Contents: Read and write**. Cole no painel administrativo.
+
+O token é mantido somente na aba atual (sessionStorage), não fica nos arquivos públicos do site. Feche a aba quando terminar e revogue o token caso seja exposto.
+
+Depois, crie um álbum, envie fotos e vídeos e personalize as capas. A publicação via Pages pode levar alguns minutos após cada commit. O site verifica atualizações periodicamente; o catálogo só muda após o deploy.
+
+**Atenção às limitações:** o upload pelo painel aceita arquivos individuais de até **20 MB**. Fotos maiores podem ser reduzidas antes do envio. Vídeos muito grandes devem ser hospedados em um serviço apropriado; arquivos GitHub têm limites e a ferramenta não é um armazenamento de mídia ilimitado.
+
+## Privacidade
+
+**Não coloque fotos particulares de clientes neste repositório público.** GitHub Pages público não implementa controle de acesso, mesmo se uma página de senha for adicionada no JavaScript. Quem conhece a URL do arquivo ou navega no repositório pode acessá-lo. Para galerias realmente privadas, é necessário outro armazenamento/autenticação, como Supabase Storage com regras de acesso, ou um servidor.
+
+## Como usar
+
+- Fotos, vídeos e favoritos organizados em abas
+- Favoritos armazenados no navegador do cliente
+- Swipe/teclado, lightbox, seleção múltipla e download ZIP
+- Capa em vídeo e fonte/escala editáveis
+- Barra fixa com Rebeca Fotografia e Instagram
+- Responsivo e com suporte a movimento reduzido
