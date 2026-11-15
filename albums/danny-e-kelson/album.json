@@ -4,5 +4,12 @@
   "font": "serif",
   "scale": 1.05,
   "cover": "",
-  "videoCover": ""
+  "videoCover": "",
+  "categories": {
+    "photos": [
+      "Making of Noiva"
+    ],
+    "videos": []
+  },
+  "assignments": {}
 }
