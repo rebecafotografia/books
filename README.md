@@ -41,7 +41,7 @@ O token é mantido somente na aba atual (sessionStorage), não fica nos arquivos
 
 Depois, crie um álbum, envie fotos e vídeos e personalize as capas. A publicação via Pages pode levar alguns minutos após cada commit. O site verifica atualizações periodicamente; o catálogo só muda após o deploy.
 
-**Atenção às limitações:** o upload pelo painel aceita arquivos individuais de até **20 MB**. Fotos maiores podem ser reduzidas antes do envio. Vídeos muito grandes devem ser hospedados em um serviço apropriado; arquivos GitHub têm limites e a ferramenta não é um armazenamento de mídia ilimitado.
+**Atenção às limitações:** o upload pelo painel aceita arquivos individuais de até **65 MB**. Fotos maiores podem ser reduzidas antes do envio. Vídeos muito grandes devem ser hospedados em um serviço apropriado; arquivos GitHub têm limites e a ferramenta não é um armazenamento de mídia ilimitado.
 
 ## Privacidade
 
