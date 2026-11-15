@@ -55,3 +55,9 @@ Depois, crie um álbum, envie fotos e vídeos e personalize as capas. A publica�
 - Capa em vídeo e fonte/escala editáveis
 - Barra fixa com Rebeca Fotografia e Instagram
 - Responsivo e com suporte a movimento reduzido
+
+## Categorias e animações
+
+No painel Studio, abra o álbum. Em **Categorias**, digite os nomes separados por vírgula, por exemplo `Noivos, Making of, Cerimônia` em Fotos, ou `Filme, Bastidores` em Vídeos. Salve, depois escolha a categoria de cada mídia no seletor abaixo da miniatura e salve novamente. O visitante vê inicialmente **Todas as fotos** ou **Todos os vídeos**; selecionar uma categoria filtra apenas as mídias atribuídas.
+
+A galeria tem entrada gradual ao rolar, revelação suave de imagens carregadas e respeita a preferência do sistema por movimento reduzido. Na primeira publicação, algumas alterações podem levar alguns minutos para aparecer no GitHub Pages.
