@@ -56,8 +56,13 @@ Depois, crie um álbum, envie fotos e vídeos e personalize as capas. A publica�
 - Barra fixa com Rebeca Fotografia e Instagram
 - Responsivo e com suporte a movimento reduzido
 
-## Categorias e animações
+## Categorias e organização por seleção
 
-No painel Studio, abra o álbum. Em **Categorias**, digite os nomes separados por vírgula, por exemplo `Noivos, Making of, Cerimônia` em Fotos, ou `Filme, Bastidores` em Vídeos. Salve, depois escolha a categoria de cada mídia no seletor abaixo da miniatura e salve novamente. O visitante vê inicialmente **Todas as fotos** ou **Todos os vídeos**; selecionar uma categoria filtra apenas as mídias atribuídas.
+No painel **?admin=1**, abra o álbum e vá a **Categorias & seleção**:
 
-A galeria tem entrada gradual ao rolar, revelação suave de imagens carregadas e respeita a preferência do sistema por movimento reduzido. Na primeira publicação, algumas alterações podem levar alguns minutos para aparecer no GitHub Pages.
+1. Escolha **Fotografias** ou **Vídeos** e crie categorias individualmente pelo campo **+ Criar categoria**. Você pode criar várias (até 40 por tipo).
+2. Clique em uma foto para selecioná-la. No computador, pode manter o mouse pressionado e arrastar sobre várias. No celular, ative **Arrastar para selecionar** para selecionar deslizando o dedo; desative para voltar a rolar a página normalmente.
+3. Escolha uma categoria nos botões (Noivos, Making of etc.) e clique em **Adicionar à categoria**. A mesma foto pode pertencer a várias categorias. **Remover da categoria** retira somente o vínculo, não apaga a foto.
+4. Clique em **Salvar alterações** para publicar as categorias e atribuições no GitHub. Uma categoria nova ainda não salva existe somente na tela até esse passo.
+
+No álbum do cliente, o primeiro filtro é **Todas as fotos**, seguido pelas categorias cadastradas. Fotos sem categoria continuam aparecendo em Todas.
