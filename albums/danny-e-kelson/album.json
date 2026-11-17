@@ -7,32 +7,10 @@
   "videoCover": "",
   "categories": {
     "photos": [
-      "Noivo"
+      "Noivo",
+      "Making Of noiva"
     ],
     "videos": []
   },
-  "assignments": {
-    "1.png": "Making of Noiva",
-    "2.png": "Making of Noiva",
-    "3.png": "Making of Noiva",
-    "4.png": "Making of Noiva",
-    "5.png": "Making of Noiva",
-    "6.png": "Making of Noiva",
-    "7.png": "Making of Noiva",
-    "8.png": "Making of Noiva",
-    "9.png": "Making of Noiva",
-    "10.png": "Making of Noiva",
-    "11.png": "Making of Noiva",
-    "12.png": "Making of Noiva",
-    "13.png": "Making of Noiva",
-    "14.png": "Making of Noiva",
-    "15.jpg": "Making of Noiva",
-    "16.png": "Making of Noiva",
-    "17.jpg": "Making of Noiva",
-    "18.jpg": "Making of Noiva",
-    "19.jpg": "Making of Noiva",
-    "20.jpg": "Making of Noiva",
-    "21.jpg": "Making of Noiva",
-    "22.jpg": "Making of Noiva"
-  }
+  "assignments": {}
 }
