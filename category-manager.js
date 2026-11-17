@@ -62,8 +62,8 @@ window.RebecaCategoryManager=(()=>{
     el(root,'[data-clear]').onclick=()=>{selected.clear();updateSelection()};
     el(root,'[data-paint]').onclick=()=>{paint=!paint;renderControls();toast(paint?'Arraste o dedo ou mouse sobre as fotos para selecionar.':'Modo arrastar desativado.')};
     grid.addEventListener('click',e=>{if(Date.now()<grid._suppressUntil)return;const item=e.target.closest('[data-media]');if(!item)return;const name=item.dataset.media;setSelected(name,!selected.has(name))});
-    grid.addEventListener('pointerdown',e=>{if(!paint||e.pointerType==='mouse'&&e.button!==0||e.isPrimary===false)return;const item=e.target.closest('[data-media]');if(!item)return;drag=true;paintAdd=!selected.has(item.dataset.media);setSelected(item.dataset.media,paintAdd);grid._suppressUntil=Date.now()+650;if(e.pointerType==='touch')e.preventDefault()});
-    grid.addEventListener('pointermove',e=>{if(!drag||!paint)return;const target=document.elementFromPoint(e.clientX,e.clientY)?.closest('[data-media]');if(target&&grid.contains(target))setSelected(target.dataset.media,paintAdd)});
+    grid.addEventListener('pointerdown',e=>{if(e.pointerType==='mouse'&&e.button!==0||e.isPrimary===false||(!paint&&e.pointerType!=='mouse'))return;const item=e.target.closest('[data-media]');if(!item)return;drag=true;paintAdd=!selected.has(item.dataset.media);setSelected(item.dataset.media,paintAdd);grid._suppressUntil=Date.now()+650;if(e.pointerType==='touch')e.preventDefault()});
+    grid.addEventListener('pointermove',e=>{if(!drag)return;const target=document.elementFromPoint(e.clientX,e.clientY)?.closest('[data-media]');if(target&&grid.contains(target))setSelected(target.dataset.media,paintAdd)});
     for(const name of ['pointerup','pointercancel','lostpointercapture'])grid.addEventListener(name,()=>{drag=false});
     const apply=(adding)=>{
       if(!active||!selected.size)return;
@@ -75,7 +75,7 @@ window.RebecaCategoryManager=(()=>{
     el(root,'[data-delete-category]').onclick=()=>{
       if(!active)return;if(!confirm('Excluir a categoria "'+active+'"? As fotos não serão apagadas.'))return;
       categories[type]=categories[type].filter(x=>x!==active);
-      for(const name of Object.keys(assignments))assignments[name]=assignments[name].filter(x=>x!==active);
+      for(const name of Object.keys(assignments)){const entry=media.find(m=>m.name===name);if(entry?.type===(type==='photos'?'photo':'video'))assignments[name]=assignments[name].filter(x=>x!==active)}
       active='';setDirty();renderGrid()
     };
     el(root,'[data-save]').onclick=async()=>{
