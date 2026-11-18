@@ -12,7 +12,7 @@ window.RebecaCategoryManager=(()=>{
     };
     const assignments={};
     for(const [name,list] of Object.entries(current.assignments||{}))assignments[name]=unique(normalized(list));
-    const media=(current.media||[]).filter(m=>m.type==='photo'||m.type==='video');
+    const media=(current.media||[]).filter(m=>m.type==='photo'||m.type==='video').slice().sort((a,b)=>a.name.localeCompare(b.name,'pt-BR',{numeric:true,sensitivity:'base'}));
     let type='photos',active='',selected=new Set(),drag=false,paint=false,paintAdd=true,busy=false,dirty=false;
     const namesFor=()=>media.filter(m=>m.type===(type==='photos'?'photo':'video'));
     function setDirty(){dirty=true;el(root,'[data-save]').textContent='Salvar alterações *'}
@@ -30,9 +30,9 @@ window.RebecaCategoryManager=(()=>{
       grid.classList.toggle('paint-mode',paint);
       updateSelection();
     };
-    const updateSelection=()=>{
+    const updateSelection=(onlyName)=>{
       count.textContent=selected.size+' '+(selected.size===1?'selecionada':'selecionadas');
-      root.querySelectorAll('[data-media]').forEach(item=>{const value=selected.has(item.dataset.media);item.classList.toggle('checked',value);item.setAttribute('aria-pressed',String(value));const check=item.querySelector('.studio-check');if(check)check.textContent=value?'✓':'+'});
+      const items=onlyName?[...grid.querySelectorAll('[data-media]')].filter(item=>item.dataset.media===onlyName):root.querySelectorAll('[data-media]');items.forEach(item=>{const value=selected.has(item.dataset.media);item.classList.toggle('checked',value);item.setAttribute('aria-pressed',String(value));const check=item.querySelector('.studio-check');if(check)check.textContent=value?'✓':'+'});
       el(root,'[data-select-all]').textContent=namesFor().every(m=>selected.has(m.name))&&namesFor().length?'Desmarcar todas':'Selecionar todas';
       el(root,'[data-apply]').disabled=!active||!selected.size;
       el(root,'[data-unassign]').disabled=!active||!selected.size
@@ -46,7 +46,8 @@ window.RebecaCategoryManager=(()=>{
       }).join(''):'<p class="adminHint">Ainda não há '+(type==='photos'?'fotos':'vídeos')+' neste álbum.</p>';
       renderControls();
     }
-    function setSelected(name,val){if(val)selected.add(name);else selected.delete(name);updateSelection()}
+    function setSelected(name,val){if(selected.has(name)===val)return;if(val)selected.add(name);else selected.delete(name);updateSelection(name)}
+    function updateCard(name){const item=[...grid.querySelectorAll('[data-media]')].find(node=>node.dataset.media===name);if(!item)return;const tags=(assignments[name]||[]).filter(c=>categories[type].includes(c));let badge=item.querySelector('.studio-tags');if(!tags.length){badge?.remove();return}if(!badge){badge=document.createElement('span');badge.className='studio-tags';item.append(badge)}badge.innerHTML=tags.map(c=>'<span>'+escape(c)+'</span>').join('')}
     function categoryChange(name){active=name;renderControls()}
     list.addEventListener('click',e=>{const b=e.target.closest('[data-cat]');if(b)categoryChange(b.dataset.cat)});
     root.querySelectorAll('[data-type]').forEach(b=>b.addEventListener('click',()=>{type=b.dataset.type;active='';selected.clear();renderGrid()}));
@@ -62,13 +63,13 @@ window.RebecaCategoryManager=(()=>{
     el(root,'[data-clear]').onclick=()=>{selected.clear();updateSelection()};
     el(root,'[data-paint]').onclick=()=>{paint=!paint;renderControls();toast(paint?'Arraste o dedo ou mouse sobre as fotos para selecionar.':'Modo arrastar desativado.')};
     grid.addEventListener('click',e=>{if(Date.now()<grid._suppressUntil)return;const item=e.target.closest('[data-media]');if(!item)return;const name=item.dataset.media;setSelected(name,!selected.has(name))});
-    grid.addEventListener('pointerdown',e=>{if(e.pointerType==='mouse'&&e.button!==0||e.isPrimary===false||(!paint&&e.pointerType!=='mouse'))return;const item=e.target.closest('[data-media]');if(!item)return;drag=true;paintAdd=!selected.has(item.dataset.media);setSelected(item.dataset.media,paintAdd);grid._suppressUntil=Date.now()+650;if(e.pointerType==='touch')e.preventDefault()});
+    grid.addEventListener('pointerdown',e=>{if(!paint||e.pointerType==='mouse'&&e.button!==0||e.isPrimary===false)return;const item=e.target.closest('[data-media]');if(!item)return;drag=true;paintAdd=!selected.has(item.dataset.media);grid._suppressUntil=Date.now()+650;try{item.setPointerCapture(e.pointerId)}catch{};setSelected(item.dataset.media,paintAdd);if(e.pointerType==='touch')e.preventDefault()});
     grid.addEventListener('pointermove',e=>{if(!drag)return;const target=document.elementFromPoint(e.clientX,e.clientY)?.closest('[data-media]');if(target&&grid.contains(target))setSelected(target.dataset.media,paintAdd)});
     for(const name of ['pointerup','pointercancel','lostpointercapture'])grid.addEventListener(name,()=>{drag=false});
     const apply=(adding)=>{
       if(!active||!selected.size)return;
       for(const name of selected){const tags=new Set(assignments[name]||[]);if(adding)tags.add(active);else tags.delete(active);assignments[name]=[...tags]}
-      setDirty();renderGrid();toast(adding?'Fotos adicionadas à categoria.':'Fotos removidas da categoria.');
+      setDirty();for(const name of selected)updateCard(name);toast(adding?'Fotos adicionadas à categoria.':'Fotos removidas da categoria.');
     };
     el(root,'[data-apply]').onclick=()=>apply(true);
     el(root,'[data-unassign]').onclick=()=>apply(false);
@@ -76,16 +77,18 @@ window.RebecaCategoryManager=(()=>{
       if(!active)return;if(!confirm('Excluir a categoria "'+active+'"? As fotos não serão apagadas.'))return;
       categories[type]=categories[type].filter(x=>x!==active);
       for(const name of Object.keys(assignments)){const entry=media.find(m=>m.name===name);if(entry?.type===(type==='photos'?'photo':'video'))assignments[name]=assignments[name].filter(x=>x!==active)}
-      active='';setDirty();renderGrid()
+      active='';setDirty();renderControls();for(const name of media.map(m=>m.name))updateCard(name)
     };
     el(root,'[data-save]').onclick=async()=>{
       if(busy)return;busy=true;const button=el(root,'[data-save]');button.disabled=true;button.textContent='Salvando…';
       try{
         const form=document.querySelector('#albumForm')?.elements;
         const b={slug:current.slug,title:form?.namedItem('title').value||current.title,subtitle:form?.namedItem('subtitle').value||'',font:form?.namedItem('font').value||'serif',scale:Number(form?.namedItem('scale').value)||1,cover:form?.namedItem('cover').value||'',videoCover:form?.namedItem('videoCover').value||'',categories,assignments};
-        await api('/api/admin/album',{method:'POST',headers:{'content-type':'application/json'},body:JSON.stringify(b)});
-        dirty=false;toast('Categorias e fotos organizadas com sucesso.');await refresh()
-      }catch(err){toast(err.message)}finally{busy=false;button.disabled=false;button.textContent=dirty?'Salvar alterações *':'Salvar alterações'}
+        const result=await api('/api/admin/album',{method:'POST',headers:{'content-type':'application/json'},body:JSON.stringify(b)});
+        if(!result?.verified)throw new Error('O GitHub não confirmou a gravação. Tente salvar novamente.');
+        current.categories=JSON.parse(JSON.stringify(categories));current.assignments=JSON.parse(JSON.stringify(assignments));
+        dirty=false;button.textContent='Salvo no GitHub ✓';toast('Categorias salvas e conferidas no GitHub.');
+      }catch(err){toast(err.message)}finally{busy=false;button.disabled=false;if(dirty)button.textContent='Salvar alterações *';else if(button.textContent!=='Salvo no GitHub ✓')button.textContent='Salvar alterações';}
     };
     renderGrid();
   }
