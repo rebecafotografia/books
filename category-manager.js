@@ -12,7 +12,7 @@ window.RebecaCategoryManager=(()=>{
     };
     const assignments={};
     for(const [name,list] of Object.entries(current.assignments||{}))assignments[name]=unique(normalized(list));
-    const media=(current.media||[]).filter(m=>m.type==='photo'||m.type==='video').slice().sort((a,b)=>a.name.localeCompare(b.name,'pt-BR',{numeric:true,sensitivity:'base'}));
+    const media=(current.media||[]).filter(m=>m.type==='photo'||m.type==='video');
     let type='photos',active='',selected=new Set(),drag=false,paint=false,paintAdd=true,busy=false,dirty=false,cards=new Map();
     const namesFor=()=>media.filter(m=>m.type===(type==='photos'?'photo':'video'));
     function setDirty(){dirty=true;el(root,'[data-save]').textContent='Salvar alterações *'}
