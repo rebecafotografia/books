@@ -13,7 +13,7 @@ window.RebecaCategoryManager=(()=>{
     const assignments={};
     for(const [name,list] of Object.entries(current.assignments||{}))assignments[name]=unique(normalized(list));
     const media=(current.media||[]).filter(m=>m.type==='photo'||m.type==='video').slice().sort((a,b)=>a.name.localeCompare(b.name,'pt-BR',{numeric:true,sensitivity:'base'}));
-    let type='photos',active='',selected=new Set(),drag=false,paint=false,paintAdd=true,busy=false,dirty=false;
+    let type='photos',active='',selected=new Set(),drag=false,paint=false,paintAdd=true,busy=false,dirty=false,cards=new Map();
     const namesFor=()=>media.filter(m=>m.type===(type==='photos'?'photo':'video'));
     function setDirty(){dirty=true;el(root,'[data-save]').textContent='Salvar alterações *'}
     root.innerHTML='<div class="studio-cats"><div class="studio-heading"><div><span class="studio-kicker">ORGANIZAÇÃO DO ÁLBUM</span><h2>Categorias & seleção</h2><p class="adminHint">Crie quantas categorias precisar. Selecione uma ou várias fotos e atribua à categoria desejada.</p></div></div><div class="studio-type"><button type="button" data-type="photos">Fotografias</button><button type="button" data-type="videos">Vídeos</button></div><div class="studio-create"><input data-newcat placeholder="Nome da categoria, ex.: Making of" maxlength="50" aria-label="Nova categoria"><button type="button" class="pill dark" data-add>+ Criar categoria</button></div><div class="studio-categories" data-categories></div><div class="studio-selection"><strong data-count>0 selecionadas</strong><div class="studio-selection-actions"><button type="button" class="pill" data-select-all>Selecionar todas</button><button type="button" class="pill" data-clear>Limpar seleção</button><button type="button" class="pill" data-paint aria-pressed="false">Arrastar para selecionar</button></div></div><div class="studio-batch"><span data-category-hint>Escolha uma categoria para organizar as fotos.</span><div class="studio-batch-actions"><button type="button" class="pill dark" data-apply>Adicionar à categoria</button><button type="button" class="pill" data-unassign>Remover da categoria</button><button type="button" class="pill" data-delete-category>Excluir categoria</button></div></div><div class="studio-media-grid" data-grid></div><div class="studio-save"><span class="adminHint">As fotos permanecem no álbum. As categorias são apenas uma organização.</span><button type="button" class="pill dark" data-save>Salvar alterações</button></div></div>';
@@ -32,7 +32,7 @@ window.RebecaCategoryManager=(()=>{
     };
     const updateSelection=(onlyName)=>{
       count.textContent=selected.size+' '+(selected.size===1?'selecionada':'selecionadas');
-      const items=onlyName?[...grid.querySelectorAll('[data-media]')].filter(item=>item.dataset.media===onlyName):root.querySelectorAll('[data-media]');items.forEach(item=>{const value=selected.has(item.dataset.media);item.classList.toggle('checked',value);item.setAttribute('aria-pressed',String(value));const check=item.querySelector('.studio-check');if(check)check.textContent=value?'✓':'+'});
+      const one=onlyName?cards.get(onlyName):null;const items=one?[one]:cards.values();for(const item of items){const value=selected.has(item.dataset.media);item.classList.toggle('checked',value);item.setAttribute('aria-pressed',String(value));const check=item.querySelector('.studio-check');if(check)check.textContent=value?'✓':'+'}
       el(root,'[data-select-all]').textContent=namesFor().every(m=>selected.has(m.name))&&namesFor().length?'Desmarcar todas':'Selecionar todas';
       el(root,'[data-apply]').disabled=!active||!selected.size;
       el(root,'[data-unassign]').disabled=!active||!selected.size
@@ -44,10 +44,11 @@ window.RebecaCategoryManager=(()=>{
         const url=new URL('albums/'+encodeURIComponent(current.slug)+'/'+encodeURIComponent(m.name),new URL('.',location.href)).href;
         return '<button type="button" class="studio-photo '+(selected.has(m.name)?'checked':'')+'" data-media="'+escape(m.name)+'" aria-label="Selecionar '+escape(m.name)+'" aria-pressed="'+selected.has(m.name)+'">'+(m.type==='photo'?'<img src="'+escape(url)+'" loading="lazy" draggable="false" alt="">':'<video src="'+escape(url)+'#t=0.1" muted playsinline preload="metadata"></video>')+'<span class="studio-check">'+(selected.has(m.name)?'✓':'+')+'</span><span class="studio-filetag">'+escape(m.name)+'</span>'+(labels.length?'<span class="studio-tags">'+labels.map(c=>'<span>'+escape(c)+'</span>').join('')+'</span>':'')+'</button>';
       }).join(''):'<p class="adminHint">Ainda não há '+(type==='photos'?'fotos':'vídeos')+' neste álbum.</p>';
+      cards=new Map([...grid.querySelectorAll('[data-media]')].map(item=>[item.dataset.media,item]));
       renderControls();
     }
     function setSelected(name,val){if(selected.has(name)===val)return;if(val)selected.add(name);else selected.delete(name);updateSelection(name)}
-    function updateCard(name){const item=[...grid.querySelectorAll('[data-media]')].find(node=>node.dataset.media===name);if(!item)return;const tags=(assignments[name]||[]).filter(c=>categories[type].includes(c));let badge=item.querySelector('.studio-tags');if(!tags.length){badge?.remove();return}if(!badge){badge=document.createElement('span');badge.className='studio-tags';item.append(badge)}badge.innerHTML=tags.map(c=>'<span>'+escape(c)+'</span>').join('')}
+    function updateCard(name){const item=cards.get(name);if(!item)return;const tags=(assignments[name]||[]).filter(c=>categories[type].includes(c));let badge=item.querySelector('.studio-tags');if(!tags.length){badge?.remove();return}if(!badge){badge=document.createElement('span');badge.className='studio-tags';item.append(badge)}badge.innerHTML=tags.map(c=>'<span>'+escape(c)+'</span>').join('')}
     function categoryChange(name){active=name;renderControls()}
     list.addEventListener('click',e=>{const b=e.target.closest('[data-cat]');if(b)categoryChange(b.dataset.cat)});
     root.querySelectorAll('[data-type]').forEach(b=>b.addEventListener('click',()=>{type=b.dataset.type;active='';selected.clear();renderGrid()}));
