@@ -6,8 +6,53 @@
   "cover": "3.png",
   "videoCover": "",
   "categories": {
-    "photos": [],
+    "photos": [
+      "Making Of noiva"
+    ],
     "videos": []
   },
-  "assignments": {}
+  "assignments": {
+    "1.png": [
+      "Making Of noiva"
+    ],
+    "2.png": [
+      "Making Of noiva"
+    ],
+    "3.png": [
+      "Making Of noiva"
+    ],
+    "4.png": [
+      "Making Of noiva"
+    ],
+    "5.png": [
+      "Making Of noiva"
+    ],
+    "6.png": [
+      "Making Of noiva"
+    ],
+    "7.png": [
+      "Making Of noiva"
+    ],
+    "8.png": [
+      "Making Of noiva"
+    ],
+    "9.png": [
+      "Making Of noiva"
+    ],
+    "10.png": [
+      "Making Of noiva"
+    ],
+    "a1.png": [
+      "Making Of noiva"
+    ],
+    "a2.png": [
+      "Making Of noiva"
+    ],
+    "a3.png": [
+      "Making Of noiva"
+    ],
+    "a4.png": [
+      "Making Of noiva"
+    ]
+  }
 }
